@@ -93,10 +93,38 @@ const updateContact = async (contactId, body) => {
   }
 };
 
+const updateStatusContact = async (contactId, body) => {
+  try {
+    if (!body || Object.keys(body).length === 0) {
+      const error = new Error("Missing fields");
+      error.status = 400;
+      throw error;
+    }
+
+    const updatedContact = await Contact.findByIdAndUpdate(
+      contactId,
+      { $set: { favorite: body.favorite } },
+      { new: true }
+    );
+
+    if (!updatedContact) {
+      const error = new Error("Not found");
+      error.status = 404;
+      throw error;
+    }
+
+    return updatedContact;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+};
+
 module.exports = {
   listContacts,
   getContactById,
   addContact,
   removeContact,
   updateContact,
+  updateStatusContact,
 };

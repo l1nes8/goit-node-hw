@@ -7,6 +7,7 @@ const {
   addContact,
   removeContact,
   updateContact,
+  updateStatusContact,
 } = require("../../models/contacts.js");
 
 const contactSchema = require("../../models/validateSchem.js");
@@ -70,13 +71,29 @@ router.put("/:contactId", async (req, res, next) => {
 
     const updatedContact = await updateContact(contactId, body);
 
-    res.status(200).json(updatedContact);
-  } catch (error) {
-    if (error.status === 404) {
+    if (updatedContact) {
+      res.status(200).json(updatedContact);
+    } else {
       res.status(404).json({ message: "Not found" });
-      return;
     }
+  } catch (error) {
+    next(error);
+  }
+});
 
+router.patch("/:contactId/favorite", async (req, res, next) => {
+  try {
+    const { contactId } = req.params;
+    const { body } = req;
+
+    const updatedContact = await updateStatusContact(contactId, body);
+
+    if (updatedContact) {
+      res.status(200).json(updatedContact);
+    } else {
+      res.status(404).json({ message: "Not found" });
+    }
+  } catch (error) {
     next(error);
   }
 });
