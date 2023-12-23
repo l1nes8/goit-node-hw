@@ -1,4 +1,5 @@
 const Contact = require("../models/contactsModel");
+const HttpError = require("../utils/HttpErrors");
 
 const listContacts = async () => {
   try {
@@ -15,10 +16,9 @@ const getContactById = async (contactId) => {
     const contact = await Contact.findById(contactId);
 
     if (!contact) {
-      const error = new Error(`Contact with ID ${contactId} not found`);
-      error.status = 404;
-      throw error;
+      throw new HttpError(404, `Contact with ID ${contactId} not found`);
     }
+
     return contact;
   } catch (error) {
     console.log(error.message);
@@ -31,9 +31,7 @@ const addContact = async (body) => {
     const requiredFields = ["name", "email", "phone"];
     for (const field of requiredFields) {
       if (!body[field]) {
-        const error = new Error(`Отсутствует обязательное поле: ${field}`);
-        error.status = 400;
-        throw error;
+        throw new HttpError(400, `Отсутствует обязательное поле: ${field}`);
       }
     }
 
@@ -57,9 +55,7 @@ const removeContact = async (contactId) => {
     if (result) {
       return { message: "Contact deleted" };
     } else {
-      const error = new Error("Not found");
-      error.status = 404;
-      throw error;
+      throw new HttpError(404, "Not found");
     }
   } catch (error) {
     console.log(error.message);
@@ -70,9 +66,7 @@ const removeContact = async (contactId) => {
 const updateContact = async (contactId, body) => {
   try {
     if (!body || Object.keys(body).length === 0) {
-      const error = new Error("Missing fields");
-      error.status = 400;
-      throw error;
+      throw new HttpError(400, "Missing fields");
     }
     const updatedContact = await Contact.findByIdAndUpdate(
       contactId,
@@ -81,9 +75,7 @@ const updateContact = async (contactId, body) => {
     );
 
     if (updatedContact === -1) {
-      const error = new Error("Not found");
-      error.status = 404;
-      throw error;
+      throw new HttpError(404, "Not found");
     }
 
     return updatedContact;
@@ -96,9 +88,7 @@ const updateContact = async (contactId, body) => {
 const updateStatusContact = async (contactId, body) => {
   try {
     if (!body || Object.keys(body).length === 0) {
-      const error = new Error("Missing fields");
-      error.status = 400;
-      throw error;
+      throw new HttpError(400, "Missing fields");
     }
 
     const updatedContact = await Contact.findByIdAndUpdate(
@@ -108,9 +98,7 @@ const updateStatusContact = async (contactId, body) => {
     );
 
     if (!updatedContact) {
-      const error = new Error("Not found");
-      error.status = 404;
-      throw error;
+      throw new HttpError(404, "Not found");
     }
 
     return updatedContact;
