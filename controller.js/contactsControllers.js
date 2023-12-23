@@ -5,9 +5,13 @@ const {
   removeContact,
   updateContact,
   updateStatusContact,
-} = require("../models/contacts.js");
+} = require("../services/contacts.js");
 
-const contactSchema = require("../models/validateSchem.js");
+const {
+  createContactSchema,
+  updateContactSchema,
+  updateStatusSchema,
+} = require("../validate/validateSchem.js");
 
 exports.getContacts = async (req, res, next) => {
   try {
@@ -30,7 +34,7 @@ exports.getContact = async (req, res, next) => {
 
 exports.creatContacts = async (req, res, next) => {
   try {
-    const { error } = contactSchema.validate(req.body);
+    const { error } = createContactSchema.validate(req.body);
     if (error) {
       const validationError = new Error(error.details[0].message);
       validationError.status = 400;
@@ -59,7 +63,7 @@ exports.updateContacts = async (req, res, next) => {
     const { contactId } = req.params;
     const { body } = req;
 
-    const { error } = contactSchema.validate(body);
+    const { error } = updateContactSchema.validate(body);
     if (error) {
       const validationError = new Error(error.details[0].message);
       validationError.status = 400;
@@ -82,6 +86,12 @@ exports.updateStatusContacts = async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const { body } = req;
+    const { error } = updateStatusSchema.validate(body);
+    if (error) {
+      const validationError = new Error(error.details[0].message);
+      validationError.status = 400;
+      throw validationError;
+    }
 
     const updatedContact = await updateStatusContact(contactId, body);
 
