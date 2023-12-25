@@ -76,7 +76,10 @@ exports.checkUser = catchAsync(async (req, res, next) => {
 
   if (!currentUser) throw new HttpError(401, "Not logged in..");
 
-  req.user = currentUser;
+  req.user = {
+    email: currentUser.email,
+    subscription: currentUser.subscription,
+  };
 
   next();
 });
