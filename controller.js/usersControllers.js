@@ -1,4 +1,9 @@
-const { registerUser, loginUser, logoutUser } = require("../services/user.js");
+const {
+  registerUser,
+  loginUser,
+  logoutUser,
+  updateAvatar,
+} = require("../services/user.js");
 
 exports.register = async (req, res, next) => {
   const { email, password, token } = req.body;
@@ -34,4 +39,14 @@ exports.logout = async (req, res, next) => {
 
 exports.getMe = async (req, res) => {
   res.status(200).json({ user: req.user });
+};
+
+exports.uploadAvatar = async (req, res, next) => {
+  try {
+    const updatedUser = await updateAvatar(req.body, req.user, req.file);
+    const avatarURL = `/${updatedUser.avatar}`;
+    res.status(200).json({ avatarURL });
+  } catch (error) {
+    next(error);
+  }
 };

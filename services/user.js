@@ -1,6 +1,7 @@
 const User = require("../models/userSchem");
 const HttpError = require("../utils/HttpErrors");
 const { registerToken } = require("./jwtService");
+const ImageService = require("./imageServices");
 
 const registerUser = async (data) => {
   const newUserData = {
@@ -42,8 +43,27 @@ const logoutUser = async (userId) => {
   await user.save();
 };
 
+const updateAvatar = async (userData, user, file) => {
+  if (file) {
+    user.avatar = await ImageService.saveImage(
+      file,
+      { maxFileSize: 1.2 },
+      user.id
+    );
+  }
+
+  Object.keys(userData).forEach((key) => {
+    user[key] = userData[key];
+  });
+
+  console.log("User before save:", user);
+
+  return user.save();
+};
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
+  updateAvatar,
 };

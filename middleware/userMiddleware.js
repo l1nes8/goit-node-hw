@@ -6,6 +6,7 @@ const {
 } = require("../validate/validateSchem.js");
 const HttpError = require("../utils/HttpErrors");
 const { checkToken } = require("../services/jwtService");
+const ImageServices = require("../services/imageServices.js");
 
 exports.checkRegisterUser = catchAsync(async (req, res, next) => {
   const { value, error } = registerUserSchema.validate(req.body);
@@ -79,7 +80,10 @@ exports.checkUser = catchAsync(async (req, res, next) => {
   req.user = {
     email: currentUser.email,
     subscription: currentUser.subscription,
+    avatar: currentUser.avatarURL,
   };
 
   next();
 });
+
+exports.uploadAvatarFilter = ImageServices.initUploadImageMiddleware("avatar");
