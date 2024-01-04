@@ -52,11 +52,12 @@ class ImageService {
         console.log(err);
       });
 
-    const avatarPath = path.join("avatars", fileName);
+    // const avatarPath = path.join("avatars", fileName);
+    const avatarURL = `avatars/${fileName}`;
 
-    await User.findByIdAndUpdate(userId, { avatarURL: avatarPath });
+    await User.findByIdAndUpdate(userId, { avatarURL: avatarURL });
 
-    return avatarPath;
+    return avatarURL;
   }
 }
 
