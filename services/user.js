@@ -56,8 +56,6 @@ const updateAvatar = async (userData, user, file) => {
     user[key] = userData[key];
   });
 
-  console.log("User before save:", user);
-
   return user.save();
 };
 
