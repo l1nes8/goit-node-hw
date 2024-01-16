@@ -7,6 +7,7 @@ const {
 const HttpError = require("../utils/HttpErrors");
 const { checkToken } = require("../services/jwtService");
 const ImageServices = require("../services/imageServices.js");
+const User = require("../models/userSchem.js");
 
 exports.checkRegisterUser = catchAsync(async (req, res, next) => {
   const { value, error } = registerUserSchema.validate(req.body);
@@ -87,3 +88,34 @@ exports.checkUser = catchAsync(async (req, res, next) => {
 });
 
 exports.uploadAvatarFilter = ImageServices.initUploadImageMiddleware("avatar");
+
+exports.getUserByEmail = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.verifyMiddleware = (req, res, next) => {
+  const { user } = req;
+
+  console.log("User:", user);
+
+  if (!req.body.email) {
+    throw new HttpError(400, "missing required field email");
+  }
+
+  if (user.verify) {
+    throw new HttpError(400, "Verification has already been passed");
+  }
+
+  next();
+};
